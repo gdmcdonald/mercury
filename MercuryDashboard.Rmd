@@ -1,0 +1,270 @@
+---
+title: "Mercury Concentration Dashboard <button class='btn btn-default' data-toggle='modal' data-target='#modal_about'>ℹ️ About Mercury in the Environment</button>"
+output: html_document
+---
+
+<script>
+   $(document).ready(function() {
+     $head = $('#header');
+     $head.prepend('<img src=\"data:image/gif;base64,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\" style=\"float: right;width: 150px;\"/>')
+   });
+</script>
+
+
+<style>
+body .main-container {
+max-width: 1600px !important;
+margin-left: auto;
+margin-right: auto;
+}
+table {
+white-space: nowrap;
+}
+</style>
+
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
+library(crosstalk)
+library(leaflet)
+library(leaflet.extras)
+library(DT)
+library(data.table)
+library(tidyverse)
+library(plotly)
+library(htmltools)
+library(bsplus)
+library(fontawesome)
+library(here)
+library(markdown)
+```
+
+```{r aboutInfo, echo=FALSE, warning=FALSE, message=FALSE}
+bs_modal(
+  id = "modal_about", 
+  title = "Mercury in the Environment",
+  body = includeMarkdown(here("about.md")),
+  footer = tags$span(
+    bs_modal_closebutton("Close")
+  ),
+  size = "large"
+)
+
+#bs_button("ℹ️ About Mercury in the Environment") %>%
+#  bs_attach_modal(id_modal = "modal_about")
+```
+
+
+```{r getData, echo=FALSE, warning=FALSE, message=FALSE}
+#load mercury_data
+load(file = here::here("Data/mercury_data_exported.Rdata"))
+
+jitter_lat_long <- 0.01
+
+mercury_data<- 
+  mercury_data[, dup := .N > 1, by = list(Latitude,Longitude)  # make new variable if Lat/Long is duplicated
+               ][,`:=`(Latitude = Latitude + dup*jitter_lat_long*rnorm(.N), # jitter the duplicated ones' Latitude
+                       Longitude = Longitude + dup*jitter_lat_long*rnorm(.N)) # jitter the duplicated ones' Longitude
+                 ][is.na(`Data collected (first)`), `Data collected (first)` := Published # push overarching dates if NAs
+                   ][is.na(`Data collected (last)`), `Data collected (last)` := `Data collected (first)`
+                     ][,`:=`( # make popup text for map
+                       popup_text = paste0(
+                         '<b><a target="_blank" rel="noopener noreferrer" href="https://www.google.com/search?q=',`Type of Fish`,'">',`Type of Fish`,"</a></b> <br>", 
+                         `Location Description`," - ", Region, " <br>",
+                         if_else(is.na(`Weight of Fish (g)`), 
+                                 "",
+                                 if_else(`Weight of Fish (g)`>1000,
+                                         paste0(round(`Weight of Fish (g)`/1000,1),"kg, "),
+                                         paste0(`Weight of Fish (g)`,"g, "))),
+                         if_else(is.na(`Length of Fish (cm)`),
+                                 "",
+                                 if_else(`Length of Fish (cm)`>100,
+                                         paste0(round(`Length of Fish (cm)`/100,2),"m, "),
+                                         paste0(`Length of Fish (cm)`, "cm, "))),
+                         if_else(is.na(`Age (years)`),"", paste0(`Age (years)`," y.o. ")),
+                         if_else(is.na(`Number of Samples`),"",paste0(`Number of Samples`," samples ")),
+                         "in ",`Data collected (last)`,"<br>",
+                         "Mercury Conc.:",if_else(`Conc Hg Fish [ug/g]`>0.5,
+                                                  paste0('<span style="color:red">',round(`Conc Hg Fish [ug/g]`,3),"ug/g</span>"),
+                                                  paste0('<span style="color:black">',round(`Conc Hg Fish [ug/g]`,3),"ug/g</span>")),
+                         "<br>",
+                         "<a target='_blank' rel='noopener noreferrer' href='",URL,"'>",Title,"</a><br> ",
+                         Authors,", ",
+                         Published,"<br>",
+                         "Lat.: ", round(Latitude,4),", Long.: ", round(Longitude,4)
+                       ),
+                       `Number of Samples` = if_else(is.na(`Number of Samples`),1,`Number of Samples`),
+                       marker_style = if_else(`Conc Hg Fish [ug/g]`<0.5,"lowHg","highHg")
+                     )][!is.na(marker_style),]
+setcolorder(mercury_data, 
+            c("Type of Fish",     
+              "Number of Samples",     
+              "Length of Fish (cm)",     
+              "Weight of Fish (g)",     
+              "Age (years)",     
+              "Conc Hg Fish [ug/g]",     
+              "Conc Hg Water [ug/mL]",     
+              "Conc Hg Sediment [ug/g]",
+              "Location Description",   
+              "Region",
+              "Latitude",     
+              "Longitude", 
+              "Authors",    
+              "Title",     
+              "Published",     
+              "Data collected (first)",     
+              "Data collected (last)",     
+              "Main Findings/Comments",
+              "URL",
+              "popup_text",
+              "marker_style"))
+
+mercury <- SharedData$new(mercury_data)
+
+icoLst <- awesomeIconList(
+  lowHg = makeAwesomeIcon(text = fa(name = "fish", fill = "black"),markerColor = "blue"),
+  highHg = makeAwesomeIcon(text = fa(name = "fish", fill = "black"),markerColor = "red")
+)
+
+# icons <- awesomeIcons(
+#   markerColor = 
+#   text = fa(name = "fish", fill = "black")
+# )
+
+#Note to self - sometimes the icons would error if they were passed an NA or a NULL, i.e. the concentration didn't exist in the data.
+
+```
+
+
+```{r,echo=FALSE, warning=FALSE, message=FALSE}
+bscols(widths = c(9,3),
+       leaflet(data = mercury,
+               height=500,
+               options = leafletOptions(minZoom = 1.4)#, width=1000
+       ) %>%
+         addTiles(group = "Map",
+                  options = providerTileOptions(zIndex = -1)) %>%
+         addProviderTiles("Esri.WorldImagery", 
+                          group = "Satellite",
+                          options = providerTileOptions(zIndex = 0)) %>% 
+         addProviderTiles("CartoDB.PositronOnlyLabels", 
+                          group = "Labels",
+                          options = providerTileOptions(zIndex = 1)) %>% 
+         addResetMapButton() %>%
+         addScaleBar(position = "bottomright") %>% 
+         addAwesomeMarkers( # clusterOptions = 1,  # clustering doesn't work with filtering
+           popup = ~popup_text,
+           group ='fish',
+           lat = ~Latitude,
+           lng = ~Longitude,
+           icon = ~ icoLst[marker_style]) %>%
+         addLayersControl(
+           baseGroups = c("Satellite",
+                          "Map"),
+           overlayGroups = c("Labels")
+         ), #%>% # Can't make the in-map search work
+       # addSearchFeatures(
+       #   targetGroups = 'fish',
+       #   options = searchFeaturesOptions(
+       #     zoom=12, openPopup = TRUE, firstTipSubmit = TRUE,
+       #     autoCollapse = TRUE, hideMarkerOnCollapse = TRUE ))
+       
+       # Create a filter input
+       list(
+         filter_select(id = "Type of Fish", 
+                       label = "Type of Fish", 
+                       sharedData = mercury, 
+                       group =~`Type of Fish`),
+         filter_select(id = "Region", 
+                       label = "Region", 
+                       sharedData = mercury, 
+                       group =~Region),
+         filter_select(id = "Location Description", 
+                       label = "Location Description", 
+                       sharedData = mercury, 
+                       group =~`Location Description`),
+         filter_select(id = "Title", 
+                       label = "Title", 
+                       sharedData = mercury, 
+                       group =~Title),
+         filter_select(id = "Authors", 
+                       label = "Authors", 
+                       sharedData = mercury, 
+                       group =~Authors)
+       ))
+
+
+bscols(widths = c(3,3,3,3),
+       # Mercury concentration histogram with vertical line at safe limit of 0.5 ug/g
+       plot_ly(data = mercury, 
+               x = ~`Conc Hg Fish [ug/g]`, 
+               y = ~as.character(`Number of Samples`), # if the number isn't a character ploty breaks. Wtf.
+               type = "histogram",
+               histfunc='sum',
+               height = 200) %>% 
+         #add_segments(x = 0.5, xend = 0.5, y = 0, yend = 50,color = "0.5 ug/g") %>% 
+         layout(xaxis = list(title = "Conc. Hg in Fish ug/g"),
+                yaxis = list(title = "Number of Samples", type='linear'),
+                shapes = list(
+                  type = "line", 
+                  y0 = 0, 
+                  y1 = 1, 
+                  yref = "paper",
+                  x0 = 0.5, 
+                  x1 = 0.5, 
+                  line = list(color = "red")
+                ),
+                showlegend = FALSE),
+       # Date published histogram
+       plot_ly(data = mercury, x = ~Published,
+               y = ~as.character(`Number of Samples`), # if the number isn't a character ploty breaks. Wtf.
+               type = "histogram",
+               histfunc='sum',
+               height = 200) %>% 
+         layout(xaxis = list(title = "Year Published"),yaxis = list(title = "Number of Samples",type='linear')),
+       # Length of Fish Histogram
+       plot_ly(data = mercury, x = ~`Length of Fish (cm)`, 
+               y = ~as.character(`Number of Samples`), # if the number isn't a character ploty breaks. Wtf.
+               type = "histogram",
+               histfunc='sum',
+               height = 200) %>% 
+         layout(xaxis = list(title = "Length of Fish (cm)"),yaxis = list(title = "Number of Samples",type='linear')),
+       # Weight of Fish Histogram
+       plot_ly(data = mercury, x = ~`Weight of Fish (g)`, 
+               y = ~as.character(`Number of Samples`), # if the number isn't a character ploty breaks. Wtf.
+               type = "histogram",
+               histfunc='sum',
+               height = 200) %>% 
+         layout(xaxis = list(title = "Weight of Fish (g)"),yaxis = list(title = "Number of Samples",type='linear'))
+)
+bscols(widths = c(3,3,3,3),
+       filter_slider(id = "Conc Hg Fish [ug/g]", 
+                     label = "Conc. Hg in Fish", 
+                     sharedData = mercury, 
+                     column=~`Conc Hg Fish [ug/g]`,
+                     post = " [ug/g]"),
+       filter_slider(id = "Published", 
+                     label = "Year Published", 
+                     sharedData = mercury, 
+                     column=~Published),
+       filter_slider(id = "Length of Fish (cm)", 
+                     label = "Length of Fish", 
+                     sharedData = mercury, 
+                     column=~`Length of Fish (cm)` ,
+                     post = " cm"),
+       filter_slider(id = "Weight of Fish", 
+                     label = "Weight of Fish", 
+                     sharedData = mercury, 
+                     column=~`Weight of Fish (g)`,
+                     post = " g")
+)
+
+datatable(mercury, 
+          extensions="Scroller", 
+          style="bootstrap", 
+          class="table",
+          width="100%",
+          options=list(deferRender=TRUE#, 
+                       #scrollY=1000#, 
+                       #scroller=TRUE
+          ))
+```

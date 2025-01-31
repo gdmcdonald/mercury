@@ -1,0 +1,439 @@
+---
+title: "Explore Mercury Data"
+author: "Dr. Gordon McDonald"
+date: "19/08/2020"
+output:
+  html_document:
+    code_folding: hide
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,cache = T)
+library(tidyverse)
+library(data.table)
+library(plotly)
+library(skimr)
+library(GGally)
+#load mercury_data
+load(file = here::here("Data/mercury_data_exported.Rdata"))
+```
+
+# Skim mercury data
+
+Have a look at each of the variables
+
+```{r}
+skim(mercury_data)
+```
+
+# How many of each kind of fish do we have?{.tabset}
+
+## Table
+```{r}
+(fish_summary <-
+    mercury_data %>% 
+  mutate(`Number of Samples` = if_else(is.na(`Number of Samples`),1,`Number of Samples`)) %>% 
+  group_by(`Type of Fish`) %>% 
+  summarise(Samples = sum(`Number of Samples`),
+            mean_conc = round( mean(`Conc Hg Fish [ug/g]`),3),
+            sd_conc =  round( sd(`Conc Hg Fish [ug/g]`),3),
+            .groups = "drop") %>% 
+   {mutate(.,`Type of Fish` = factor(x = `Type of Fish`, 
+                                     levels = `Type of Fish`[order(Samples,decreasing = T)], 
+                                     ordered = T))} %>% 
+   arrange(desc(Samples))) %>% 
+  DT::datatable()
+```
+
+## Bar graph (All)
+
+```{r}
+fish_summary %>% 
+  ggplot(aes(x = `Type of Fish`,y = Samples))+
+  geom_bar(stat = "identity")+
+  theme(axis.text.x = element_text(angle = 90,hjust = 1,size = 4))
+```
+
+## Bar graph (Top 15)
+
+```{r}
+fish_summary %>% 
+  filter(as.numeric(`Type of Fish`)<=15) %>% 
+  {ggplot(.,aes(x = `Type of Fish`,y = Samples))+
+  geom_bar(stat = "identity")+
+  theme(axis.text.x = element_text(angle = 90,hjust = 1, size = 7))} %>% ggplotly(height = 500)
+```
+
+
+```{r, message = F, warning = F, eval = F, include = F}
+ggpairs(mercury_data %>% 
+          select(where(is.numeric)) %>% 
+          select(-c("Published", 
+                    "Data collected (first)",
+                    "Data collected (last)",
+                    "Latitude","Longitude"))
+)
+```
+
+# Fish Size/Age/Weight{.tabset}
+
+## Fish Length{.tabset}
+### All
+
+```{r, message = F, warning = F}
+mercury_data %>% 
+  {ggplot(.,aes(x = `Length of Fish (cm)`))+
+      geom_histogram()} %>% 
+  ggplotly
+```
+
+### Small Fish Length
+Length < 1m
+```{r, message = F, warning = F}
+mercury_data %>% 
+  filter(`Length of Fish (cm)`<100) %>% 
+  {ggplot(.,aes(x = `Length of Fish (cm)`))+
+      geom_histogram()} %>% 
+  ggplotly
+```
+
+## Fish Weight{.tabset}
+### All
+
+```{r, warning = F, message=F}
+mercury_data %>% 
+  {ggplot(.,aes(x = `Weight of Fish (g)`))+
+      geom_histogram()} %>% 
+  ggplotly
+```
+
+### Small Fish Weight
+Weight < 10kg
+```{r, warning = F, message=F}
+mercury_data %>% 
+  filter(`Weight of Fish (g)`< 10000) %>% 
+  {ggplot(.,aes(x = `Weight of Fish (g)`))+
+      geom_histogram()} %>% 
+  ggplotly
+```
+
+## Fish Age{.tabset}
+
+### All
+
+```{r, warning = F, message = F}
+mercury_data %>% 
+  {ggplot(.,aes(x = `Age (years)`))+
+      geom_histogram()} %>% 
+  ggplotly
+```
+
+### Young Fish Age
+Age < 10 years
+```{r, warning = F, message = F}
+mercury_data %>% 
+  filter(`Age (years)`<10) %>% 
+  {ggplot(.,aes(x = `Age (years)`))+
+      geom_histogram()} %>% 
+  ggplotly
+```
+
+## Fish Size/Weight{.tabset}
+
+### All
+
+```{r, message = F, warning = F}
+mercury_data %>%
+  select(`Length of Fish (cm)`,
+         `Weight of Fish (g)`,
+         `Type of Fish`) %>%
+  na.omit %>%
+  {ggplot(.,aes(x = `Length of Fish (cm)`,
+                y = `Weight of Fish (g)`,
+                color = `Type of Fish`))+
+      geom_point()+
+      coord_cartesian(xlim = c(0,300))+
+      theme(legend.position = 'none')} %>% 
+  ggplotly
+```
+
+### Big Fish size/weight (Tuna/Shark)
+
+```{r, message = F, warning = F}
+mercury_data %>%
+  select(`Length of Fish (cm)`,
+         `Weight of Fish (g)`,
+         `Type of Fish`) %>%
+  na.omit %>%
+  filter(`Length of Fish (cm)`>100,
+         `Weight of Fish (g)`>10000) %>% 
+  # filter(grepl("(tuna|shark)",
+  #              as.character(`Type of Fish`),
+  #              ignore.case = TRUE)) %>% 
+  {ggplot(.,aes(x = `Length of Fish (cm)`,
+                y = `Weight of Fish (g)`,
+                color = `Type of Fish`))+
+      geom_point()+
+      coord_cartesian(xlim = c(0,300))+
+      theme(legend.position = 'none')} %>% 
+  ggplotly
+```
+
+### Small Fish size/weight
+
+```{r, message = F, warning = F}
+mercury_data %>%
+  select(`Length of Fish (cm)`,
+         `Weight of Fish (g)`,
+         `Type of Fish`) %>%
+  na.omit %>%
+  filter(`Length of Fish (cm)`<=100,
+         `Weight of Fish (g)`<=10000) %>% 
+  # filter(!grepl("(tuna|shark)",
+  #               as.character(`Type of Fish`),
+  #               ignore.case = TRUE)) %>% 
+  {ggplot(.,aes(x = `Length of Fish (cm)`,
+                y = `Weight of Fish (g)`,
+                color = `Type of Fish`))+
+      geom_point()+
+      theme(legend.position = 'none')} %>% 
+  ggplotly
+```
+
+## Fish age/weight
+
+```{r, message = F, warning = F}
+mercury_data %>%
+  select(`Age (years)`,
+         `Weight of Fish (g)`,
+         `Type of Fish`) %>%
+  na.omit %>% 
+  {ggplot(.,aes(x = `Age (years)`,
+                y = `Weight of Fish (g)`,
+                color = `Type of Fish`))+
+      geom_point()+
+      theme(legend.position = 'none')} %>% 
+  ggplotly
+```
+
+## Fish age/length
+
+```{r, message = F, warning = F}
+mercury_data %>%
+  select(`Age (years)`,
+         `Length of Fish (cm)`,
+         `Type of Fish`) %>%
+  na.omit %>% 
+  {ggplot(.,aes(x = `Age (years)`,
+                y = `Length of Fish (cm)`,
+                color = `Type of Fish`))+
+      geom_point()+
+      theme(legend.position = 'none')} %>% 
+  ggplotly
+```
+
+# Concentration of Mercury{.tabset}
+
+## Fish Conc{.tabset}
+
+### All
+
+```{r, message = F, warning = F}
+mercury_data %>% 
+  {ggplot(.,aes(x = `Conc Hg Fish [ug/g]`))+
+      geom_vline(xintercept = 0.5, color = "red")+
+      geom_histogram()} %>% 
+  ggplotly
+```
+
+### Excluding highest
+
+Everything below 4 ug/g
+
+```{r, message = F, warning = F}
+mercury_data %>% 
+  filter(`Conc Hg Fish [ug/g]`<4) %>% 
+  {ggplot(.,aes(x = `Conc Hg Fish [ug/g]`))+
+      geom_vline(xintercept = 0.5, color = "red")+
+      geom_histogram()} %>% 
+  ggplotly
+```
+
+## Sediment Conc{.tabset}
+
+### All
+```{r, message = F, warning = F}
+mercury_data %>% 
+  {ggplot(.,aes(x = `Conc Hg Sediment [ug/g]`))+
+      geom_histogram()} %>% 
+  ggplotly
+```
+
+### Excluding highest
+
+Everything below 1 ug/g
+
+```{r, message = F, warning = F}
+mercury_data %>% 
+  filter(`Conc Hg Sediment [ug/g]`<1) %>% 
+  {ggplot(.,aes(x = `Conc Hg Sediment [ug/g]`))+
+      geom_histogram()} %>% 
+  ggplotly
+```
+
+## Fish conc/length
+
+```{r, message = F, warning = F}
+mercury_data %>%
+  select(`Conc Hg Fish [ug/g]`,
+         `Length of Fish (cm)`,
+         `Type of Fish`) %>%
+  na.omit %>% 
+  {ggplot(.,aes(x = `Conc Hg Fish [ug/g]`,
+                y = `Length of Fish (cm)`,
+                color = `Type of Fish`))+
+      geom_vline(xintercept = 0.5,color = "red")+
+      geom_point()+
+      theme(legend.position = 'none')} %>% 
+  ggplotly
+```
+
+
+
+
+## Fish conc/weight
+
+```{r, message = F, warning = F}
+mercury_data %>%
+  select(`Conc Hg Fish [ug/g]`,
+         `Weight of Fish (g)`,
+         `Type of Fish`) %>%
+  na.omit %>% 
+  {ggplot(.,aes(x = `Conc Hg Fish [ug/g]`,
+                y = `Weight of Fish (g)`,
+                color = `Type of Fish`))+
+      geom_vline(xintercept = 0.5,color = "red")+
+      geom_point()+
+      theme(legend.position = 'none')} %>% 
+  ggplotly
+```
+
+## Fish conc/Age
+
+```{r, message = F, warning = F}
+mercury_data %>%
+  select(`Conc Hg Fish [ug/g]`,
+         `Age (years)`,
+         `Type of Fish`) %>%
+  na.omit %>% 
+  {ggplot(.,aes(x = `Conc Hg Fish [ug/g]`,
+                y = `Age (years)`,
+                color = `Type of Fish`))+
+      geom_vline(xintercept = 0.5,color = "red")+
+      geom_point()+
+      theme(legend.position = 'none')} %>% 
+  ggplotly
+```
+
+
+## Fish conc/Year of Publication
+
+```{r, message = F, warning = F}
+mercury_data %>%
+  select(`Conc Hg Fish [ug/g]`,
+         Published,
+         `Type of Fish`) %>%
+  na.omit %>% 
+  {ggplot(.,aes(x = `Conc Hg Fish [ug/g]`,
+                y = Published,
+                color = `Type of Fish`))+
+      geom_vline(xintercept = 0.5,color = "red")+
+      geom_point()+
+      theme(legend.position = 'none')} %>% 
+  ggplotly
+```
+
+
+
+## Fish conc/Sediment conc
+
+```{r, message = F, warning = F}
+mercury_data %>%
+  select(`Conc Hg Fish [ug/g]`,
+         `Conc Hg Sediment [ug/g]`,
+         `Type of Fish`) %>%
+  na.omit %>% 
+  {ggplot(.,aes(x = `Conc Hg Fish [ug/g]`,
+                y = `Conc Hg Sediment [ug/g]`,
+                color = `Type of Fish`))+
+      geom_vline(xintercept = 0.5,color = "red")+
+      geom_point()+
+      theme(legend.position = 'none')+
+      coord_cartesian(expand = FALSE)} %>% 
+  ggplotly
+```
+
+
+
+## Fish conc/Region
+
+```{r, message = F, warning = F}
+mercury_data %>%
+  select(`Conc Hg Fish [ug/g]`,
+         Region) %>%
+  na.omit %>% 
+  {ggplot(.,aes(x = Region,
+                y = `Conc Hg Fish [ug/g]`))+
+      geom_hline(yintercept = 0.5,color = "red")+
+      geom_boxplot()+
+      theme(legend.position = 'none')+
+      coord_cartesian(expand = FALSE)}
+```
+
+
+
+## Fish conc/Type of Fish{.tabset}
+
+### All
+
+```{r, message = F, warning = F, fig.height = 7}
+mercury_data %>%
+  mutate(`Type of Fish` = factor(x = `Type of Fish`,levels = fish_summary$`Type of Fish`[order(fish_summary$mean_conc,decreasing = T)])) %>% 
+  select(`Conc Hg Fish [ug/g]`,
+         `Type of Fish`) %>%
+  na.omit %>% 
+  {ggplot(.,aes(x = `Type of Fish`,
+                y = `Conc Hg Fish [ug/g]`,
+                text = `Type of Fish`))+
+      geom_hline(yintercept = 0.5,color = "red")+
+      geom_boxplot()+
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 6),
+            legend.position = 'none')+
+      coord_cartesian(expand = FALSE)} %>% 
+  ggplotly(tooltip = "text")
+```
+
+### Top 20
+
+```{r, message = F, warning = F, fig.height = 7}
+mercury_data %>%
+  mutate(`Type of Fish` = factor(x = `Type of Fish`,
+                                 levels = fish_summary$`Type of Fish`[order(fish_summary$mean_conc,
+                                                                            decreasing = T)])) %>% 
+  select(`Conc Hg Fish [ug/g]`,
+         `Type of Fish`) %>%
+  na.omit %>% 
+  filter(as.numeric(`Type of Fish`)<=20) %>% 
+  {ggplot(.,aes(x = `Type of Fish`,
+                y = `Conc Hg Fish [ug/g]`,
+                text = `Type of Fish`))+
+      geom_hline(yintercept = 0.5,color = "red")+
+      geom_boxplot()+
+      theme(axis.text.x = element_text(angle = 90, hjust = 1),
+            legend.position = 'none')+
+      coord_cartesian(expand = FALSE)} %>% 
+  ggplotly(tooltip = "text")
+```
