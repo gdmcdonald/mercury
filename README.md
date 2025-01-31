@@ -1,9 +1,9 @@
 # Mercury Dashboard
 Mercury concentration in fish, with Prof. Elaine Baker and the Marine Studies Institute.
 
-[Mercury Dashboard](https://sydney-informatics-hub.github.io/mercury/)
+[Mercury Dashboard](https://gdmcdonald.github.io/mercury/)
 
-[Exploration of data](https://sydney-informatics-hub.github.io/mercury/Explore_mercury_data.html)
+[Exploration of data](https://gdmcdonald.github.io/mercury/Explore_mercury_data.html)
 
 # Mercury in the Environment
 
