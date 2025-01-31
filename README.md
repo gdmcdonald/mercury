@@ -1,11 +1,9 @@
-# Mercury Dashboard (PIPE-1478)
-Mercury concentration in fish, with Prof. Elaine Baker
+# Mercury Dashboard
+Mercury concentration in fish, with Prof. Elaine Baker and the Marine Studies Institute.
 
-## Mercury Dashboard:
-https://pages.github.sydney.edu.au/informatics/PIPE-1478-Mercury-Dashboard/MercuryDashboard.html
+[Mercury Dashboard](https://sydney-informatics-hub.github.io/mercury/)
 
-## Exploration of data:
-https://pages.github.sydney.edu.au/informatics/PIPE-1478-Mercury-Dashboard/Explore_mercury_data.html
+[Exploration of data](https://sydney-informatics-hub.github.io/mercury/Explore_mercury_data.html)
 
 # Mercury in the Environment
 
